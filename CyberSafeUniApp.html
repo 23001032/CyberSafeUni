@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn essential cybersecurity skills with CyberSafe Uni's interactive modules and quizzes.">
+  <title>CyberSafe Uni - Cybersecurity Training for Students</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/react@17/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-router-dom@5.2.0/umd/react-router-dom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.20.6/babel.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #1a1a2e, #16213e);
+      font-family: 'Inter', sans-serif;
+      color: #e0e0e0;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .btn-cyan {
+      background-color: #0bb4ff;
+      color: white;
+    }
+    .btn-cyan:hover {
+      background-color: #0099e6;
+    }
+    .card {
+      background-color: #2a2a3e;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .nav-bar {
+      background-color: #1a1a2e;
+      padding: 10px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .nav-bar a {
+      color: #e0e0e0;
+      text-decoration: none;
+      margin: 0 15px;
+    }
+    .nav-bar a:hover {
+      color: #0bb4ff;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+    
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZgqVQjgtGDx_U6DCecmAoU3k5iDZHTeU",
+      authDomain: "cybersafeuni-b6134.firebaseapp.com",
+      projectId: "cybersafeuni-b6134",
+      storageBucket: "cybersafeuni-b6134.firebasestorage.app",
+      messagingSenderId: "72020374995",
+      appId: "1:72020374995:web:e15aed7ed5a3ac17cc2b26",
+      measurementId: "G-W1CG5LHM3F"
+    };
+    
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const analytics = getAnalytics(app);
+    
+    // Expose a function to submit survey data with a timestamp
+    window.submitSurvey = (data) => addDoc(collection(db, "surveyResponses"), {
+      ...data,
+      timestamp: serverTimestamp()
+    });
+  </script>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const { HashRouter, Route, Switch, Link } = window.ReactRouterDOM;
+
+    const tips = [
+      "Use a password manager like Bitwarden to store complex passwords securely. <i class='fas fa-key'></i>",
+      "Enable two-factor authentication (2FA) on your university email for an extra layer of security. <i class='fas fa-shield-alt'></i>",
+      "Avoid clicking links in emails with urgent demands—check the sender’s domain first. <i class='fas fa-exclamation-triangle'></i>",
+      "Use a VPN like ProtonVPN when connecting to public Wi-Fi to encrypt your data. <i class='fas fa-wifi'></i>",
+      "Look for HTTPS and a padlock icon to verify a website’s legitimacy. <i class='fas fa-lock'></i>",
+      "Don’t plug in unknown USB drives—they could contain malware. <i class='fas fa-usb'></i>"
+    ];
+
+    const stats = [
+      "There are 2,200 cyber attacks per day, with one every 39 seconds.",
+      "The average cost of a data breach is $4.45 million.",
+      "Phishing attacks account for 36% of all data breaches.",
+      "Over 90% of cyber attacks start with a phishing email.",
+      "The global cybersecurity market is expected to reach $345.4 billion by 2026."
+    ];
+
+    const quizData = [
+      { question: "What makes a strong password? <i class='fas fa-key'></i>", options: ["Your name and birth year", "At least 12 characters with letters, numbers, and symbols", "The word 'password'"], correct: 1, feedback: "Exactly! Mix it up for max security." },
+      { question: "What’s a phishing red flag? <i class='fas fa-exclamation-triangle'></i>", options: ["A friendly greeting", "Urgent demands to click a link", "A company logo"], correct: 1, feedback: "Spot on! Urgency is a scam tactic." },
+      { question: "What does 2FA add to your account? <i class='fas fa-shield-alt'></i>", options: ["A second password", "A code sent to your phone or email", "A new username"], correct: 1, feedback: "Nice! 2FA adds an extra layer." },
+      { question: "Is ‘Free_Cafe_WiFi’ safe to use for banking? <i class='fas fa-wifi'></i>", options: ["Yes, if it’s fast", "No, use a VPN", "Yes, if it’s password-protected"], correct: 1, feedback: "Correct! Public Wi-Fi needs a VPN." },
+      { question: "How do you spot a secure website? <i class='fas fa-lock'></i>", options: ["It has a cool design", "It uses HTTPS and a padlock icon", "It loads quickly"], correct: 1, feedback: "Great! HTTPS keeps your data safe." },
+      { question: "What’s social engineering? <i class='fas fa-user-secret'></i>", options: ["Designing secure apps", "Tricking people into sharing info", "Fixing Wi-Fi networks"], correct: 1, feedback: "Right! Stay alert for scams." },
+      { question: "What should you do with a suspicious email? <i class='fas fa-envelope'></i>", options: ["Click the link to investigate", "Delete it and report it", "Reply to ask for details"], correct: 1, feedback: "Perfect! Don’t engage with scams." },
+      { question: "Why use a password manager? <i class='fas fa-vault'></i>", options: ["To create weak passwords", "To store complex passwords securely", "To share passwords with friends"], correct: 1, feedback: "Yes! It’s a game-changer." },
+      { question: "What’s a risk of unknown USB drives? <i class='fas fa-usb'></i>", options: ["They’re slow", "They may contain malware", "They’re expensive"], correct: 1, feedback: "Correct! USBs can be dangerous." },
+      { question: "Who should you tell about a fake IT call? <i class='fas fa-phone'></i>", options: ["Your roommate", "University IT support", "Nobody"], correct: 1, feedback: "Good call! Report it to IT." }
+    ];
+
+    const scenarios = [
+      { question: "You get an email saying your university account is 'locked' with a login link.", options: ["Click the link", "Check the sender's email", "Reply with your password"], correct: 1, feedback: "Nice! Always verify the sender’s domain." },
+      { question: "A friend offers a USB with 'exam notes.'", options: ["Plug it in", "Scan it first", "Decline politely"], correct: 2, feedback: "Smart move—unknown USBs can carry malware." }
+    ];
+
+    const topics = [
+      { title: 'Password Management', description: 'Learn how to create and manage strong passwords to protect your accounts.', tips: ['Use passwords that are at least 12 characters long, including letters, numbers, and symbols.', 'Consider using passphrases, like "Coffee!Study4Ever", which are easier to remember.', 'Utilize a password manager, such as Bitwarden, to store and generate complex passwords.', 'Enable two-factor authentication (2FA) on your accounts for an extra layer of security.'] },
+      { title: 'Phishing Awareness', description: 'Understand how to identify and avoid phishing attempts that try to steal your information.', tips: ['Check the sender’s email address carefully; look for misspellings or unusual domains.', 'Hover over links to see the actual URL before clicking.', 'Be wary of emails that create a sense of urgency or ask for personal information.', 'If in doubt, verify directly with the supposed sender through official channels.'] },
+      { title: 'Safe Browsing Habits', description: 'Adopt practices to ensure your online activities are secure, especially on public networks.', tips: ['Avoid using public Wi-Fi for sensitive transactions; use a VPN if necessary.', 'Look for "HTTPS" and a padlock icon in the browser’s address bar to confirm a website’s security.', 'Keep your browser and security software up to date.', 'Be cautious when downloading files or clicking on ads.'] },
+      { title: 'Social Engineering', description: 'Learn about tactics used by attackers to manipulate you into divulging confidential information.', tips: ['Be skeptical of unsolicited calls or messages asking for personal information.', 'Verify the identity of anyone requesting sensitive data, especially if they claim to be from IT support.', 'Do not plug in unknown USB drives or click on suspicious links.', 'Report any suspicious activity to the appropriate authorities, such as university IT support.'] }
+    ];
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function TipCard({ tip }) {
+      return (
+        <div className="card flex items-center animate-fade-in transform hover:scale-105 transition">
+          <i className="fas fa-lightbulb text-yellow-500 mr-3"></i>
+          <div className="flex-1 text-center">
+            <h3 className="text-lg font-semibold">Daily Tip</h3>
+            <p dangerouslySetInnerHTML={{ __html: tip }}></p>
+          </div>
+        </div>
+      );
+    }
+
+    function StatCard({ stat }) {
+      return (
+        <div className="card flex items-center animate-fade-in transform hover:scale-105 transition">
+          <i className="fas fa-info-circle text-blue-500 mr-3"></i>
+          <div className="flex-1 text-center">
+            <h3 className="text-lg font-semibold">Did You Know?</h3>
+            <p>{stat}</p>
+          </div>
+        </div>
+      );
+    }
+
+    function QuizComponent({ questions, title }) {
+      const [preparedQuestions, setPreparedQuestions] = useState([]);
+      const [currentQuiz, setCurrentQuiz] = useState(0);
+      const [score, setScore] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [submitted, setSubmitted] = useState(false);
+      const [isAnswerCorrect, setIsAnswerCorrect] = useState(null);
+      const [completed, setCompleted] = useState(false);
+
+      useEffect(() => {
+        const prepareQuestions = questions.map(q => {
+          const correctAnswer = q.options[q.correct];
+          const shuffledOptions = shuffleArray([...q.options]);
+          return { ...q, shuffledOptions, correctAnswer };
+        });
+        setPreparedQuestions(prepareQuestions);
+      }, [questions]);
+
+      const handleSubmit = () => {
+        if (selected !== null) {
+          setIsAnswerCorrect(selected === preparedQuestions[currentQuiz].correctAnswer);
+          setSubmitted(true);
+        }
+      };
+
+      const handleNext = () => {
+        if (isAnswerCorrect) setScore(score + 1);
+        if (currentQuiz + 1 < preparedQuestions.length) {
+          setCurrentQuiz(currentQuiz + 1);
+          setSelected(null);
+          setSubmitted(false);
+          setIsAnswerCorrect(null);
+        } else {
+          setCompleted(true);
+        }
+      };
+
+      const reset = () => {
+        const prepareQuestions = questions.map(q => {
+          const correctAnswer = q.options[q.correct];
+          const shuffledOptions = shuffleArray([...q.options]);
+          return { ...q, shuffledOptions, correctAnswer };
+        });
+        setPreparedQuestions(prepareQuestions);
+        setCurrentQuiz(0);
+        setScore(0);
+        setSelected(null);
+        setSubmitted(false);
+        setIsAnswerCorrect(null);
+        setCompleted(false);
+      };
+
+      if (preparedQuestions.length === 0) return null;
+
+      return (
+        <section>
+          <h2 className="text-2xl font-bold mb-4">{title}</h2>
+          {!completed ? (
+            <div className="card animate-fade-in">
+              <h3 className="text-lg font-semibold mb-4" dangerouslySetInnerHTML={{ __html: preparedQuestions[currentQuiz].question }}></h3>
+              {preparedQuestions[currentQuiz].shuffledOptions.map((option, index) => (
+                <label key={index} className="block mb-4">
+                  <input
+                    type="radio"
+                    name="quiz"
+                    checked={selected === option}
+                    onChange={() => setSelected(option)}
+                    disabled={submitted}
+                    className="mr-2"
+                  />
+                  {option}
+                </label>
+              ))}
+              {!submitted ? (
+                <button
+                  onClick={handleSubmit}
+                  disabled={selected === null}
+                  className="mt-4 btn-cyan px-4 py-2 rounded disabled:bg-gray-400 transition"
+                  aria-label="Submit answer"
+                >
+                  Submit
+                </button>
+              ) : (
+                <div className="mt-4">
+                  <p className={isAnswerCorrect ? "text-green-400" : "text-red-400"}>
+                    {isAnswerCorrect ? "Correct!" : `Incorrect. ${preparedQuestions[currentQuiz].feedback}`}
+                  </p>
+                  <button
+                    onClick={handleNext}
+                    className="mt-4 btn-cyan px-4 py-2 rounded transition"
+                    aria-label="Next question"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="card text-center">
+              <h3 className="text-xl font-bold mb-4">{title} Completed!</h3>
+              <p className="mb-4">Your score: {score} out of {preparedQuestions.length}</p>
+              <p className="mb-4">
+                {score >= preparedQuestions.length * 0.8 ? "Excellent! You're a CyberSafe expert!" : score >= preparedQuestions.length * 0.5 ? "Good job! Keep learning." : "Try again to improve your score!"}
+              </p>
+              <button onClick={reset} className="btn-cyan px-4 py-2 rounded transition">Retake {title}</button>
+              <p className="mt-4">Please take a moment to <Link to="/survey" className="text-blue-400">complete our survey</Link>.</p>
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    function PasswordChecker() {
+      const [password, setPassword] = useState('');
+      const [feedback, setFeedback] = useState('');
+
+      const evaluatePassword = (pwd) => {
+        if (pwd.length < 8) return "Weak: Password is too short.";
+        if (!/[A-Z]/.test(pwd)) return "Weak: Add uppercase letters.";
+        if (!/[0-9]/.test(pwd)) return "Weak: Add numbers.";
+        if (!/[^A-Za-z0-9]/.test(pwd)) return "Weak: Add symbols.";
+        if (pwd.length >= 12) return "Strong: Great password!";
+        return "Moderate: Consider making it longer.";
+      };
+
+      useEffect(() => {
+        setFeedback(password ? evaluatePassword(password) : '');
+      }, [password]);
+
+      return (
+        <div className="mt-4">
+          <h4 className="text-lg font-semibold mb-2">Try It: Password Strength Checker</h4>
+          <label htmlFor="password-input" className="sr-only">Enter a password</label>
+          <input
+            id="password-input"
+            type="text"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter a password"
+            className="w-full p-2 border rounded text-gray-800"
+            aria-describedby="password-feedback"
+          />
+          {feedback && <p id="password-feedback" className="mt-2" aria-live="polite">{feedback}</p>}
+        </div>
+      );
+    }
+
+    function TopicList({ topics, onSelect, completedTopics }) {
+      return (
+        <div className="flex flex-wrap gap-4 p-4">
+          {topics.map((topic, index) => (
+            <button
+              key={index}
+              className={`flex-1 min-w-[200px] px-4 py-2 rounded hover:bg-gray-600 transition text-left ${completedTopics.includes(topic.title) ? 'bg-green-600' : 'bg-gray-700'}`}
+              onClick={() => onSelect(topic)}
+            >
+              <h3 className="text-lg font-semibold">{topic.title}</h3>
+              {completedTopics.includes(topic.title) && <i className="fas fa-check text-green-400 ml-2"></i>}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    function TopicDetail({ topic, onBack, markAsCompleted }) {
+      return (
+        <div className="card animate-fade-in p-8 overflow-y-auto">
+          <button onClick={onBack} className="md:hidden mb-4 text-blue-400" aria-label="Back to topics">Back to Topics</button>
+          <h3 className="text-xl font-bold mb-4">{topic.title}</h3>
+          <p className="mb-6 text-gray-300">{topic.description}</p>
+          <h4 className="text-lg font-semibold mb-3">Key Tips:</h4>
+          <ul className="list-disc pl-6 mb-6 space-y-2">
+            {topic.tips.map((tip, index) => (
+              <li key={index} className="text-gray-200">{tip}</li>
+            ))}
+          </ul>
+          {topic.title === 'Password Management' && <PasswordChecker />}
+          <button onClick={() => markAsCompleted(topic.title)} className="btn-cyan px-4 py-2 rounded mt-4">Mark as Completed</button>
+        </div>
+      );
+    }
+
+    function WelcomeModal({ onClose }) {
+      const closeButtonRef = useRef(null);
+
+      useEffect(() => {
+        closeButtonRef.current.focus();
+      }, []);
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+          <div className="card max-w-sm animate-fade-in">
+            <h2 id="welcome-title" className="text-2xl font-bold mb-4">Welcome to CyberSafe Uni!</h2>
+            <p className="mb-4">
+              Stay safe online with daily cybersecurity tips, quizzes, and learning modules.
+            </p>
+            <button
+              ref={closeButtonRef}
+              onClick={onClose}
+              className="btn-cyan px-4 py-2 rounded transition"
+              aria-label="Close welcome message"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function Survey() {
+      const [phishingConfidence, setPhishingConfidence] = useState(null);
+      const [usefulness, setUsefulness] = useState(null);
+      const [mostHelpfulTopic, setMostHelpfulTopic] = useState('');
+      const [likes, setLikes] = useState('');
+      const [improvements, setImprovements] = useState('');
+      const [changedHabits, setChangedHabits] = useState(null);
+      const [habitsDetails, setHabitsDetails] = useState('');
+      const [recommend, setRecommend] = useState(null);
+
+      const isFormComplete = phishingConfidence !== null && usefulness !== null && mostHelpfulTopic !== '' && changedHabits !== null && recommend !== null;
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (isFormComplete) {
+          const responseData = {
+            phishingConfidence,
+            usefulness,
+            mostHelpfulTopic,
+            likes,
+            improvements,
+            changedHabits,
+            habitsDetails: changedHabits === 'yes' ? habitsDetails : null,
+            recommend
+          };
+          window.submitSurvey(responseData)
+            .then(() => {
+              alert('Thank you for your feedback!');
+            })
+            .catch((error) => {
+              console.error("Error submitting survey:", error);
+              alert('There was an error submitting your survey. Please try again.');
+            });
+        }
+      };
+
+      return (
+        <section className="card animate-fade-in">
+          <h2 className="text-2xl font-bold mb-4">Evaluation Survey</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <p>1. How confident are you in spotting phishing emails now? (1 = Not confident, 5 = Very confident)</p>
+              {[1, 2, 3, 4, 5].map(num => (
+                <label key={num} className="mr-4">
+                  <input
+                    type="radio"
+                    name="phishingConfidence"
+                    value={num}
+                    onChange={() => setPhishingConfidence(num)}
+                    className="mr-2"
+                  />
+                  {num}
+                </label>
+              ))}
+            </div>
+            <div className="mb-4">
+              <p>2. How useful was the training module? (1 = Not useful, 5 = Very useful)</p>
+              {[1, 2, 3, 4, 5].map(num => (
+                <label key={num} className="mr-4">
+                  <input
+                    type="radio"
+                    name="usefulness"
+                    value={num}
+                    onChange={() => setUsefulness(num)}
+                    className="mr-2"
+                  />
+                  {num}
+                </label>
+              ))}
+            </div>
+            <div className="mb-4">
+              <label htmlFor="mostHelpfulTopic">3. Which topic was most helpful? (Select one)</label>
+              <select
+                id="mostHelpfulTopic"
+                value={mostHelpfulTopic}
+                onChange={(e) => setMostHelpfulTopic(e.target.value)}
+                className="w-full p-2 border rounded text-gray-800"
+              >
+                <option value="">Select a topic</option>
+                <option value="Password Management">Password Management</option>
+                <option value="Phishing Awareness">Phishing Awareness</option>
+                <option value="Safe Browsing Habits">Safe Browsing Habits</option>
+                <option value="Social Engineering">Social Engineering</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="likes">4. What did you like about the module? (Open-ended)</label>
+              <textarea
+                id="likes"
+                value={likes}
+                onChange={(e) => setLikes(e.target.value)}
+                className="w-full p-2 border rounded text-gray-800"
+                rows="3"
+              ></textarea>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="improvements">5. What could be improved? (Open-ended)</label>
+              <textarea
+                id="improvements"
+                value={improvements}
+                onChange={(e) => setImprovements(e.target.value)}
+                className="w-full p-2 border rounded text-gray-800"
+                rows="3"
+              ></textarea>
+            </div>
+            <div className="mb-4">
+              <p>6. Have you changed any online habits (e.g., enabled 2FA, used a VPN)?</p>
+              <label className="block">
+                <input
+                  type="radio"
+                  name="changedHabits"
+                  value="yes"
+                  onChange={() => setChangedHabits('yes')}
+                  className="mr-2"
+                />
+                Yes
+              </label>
+              <label className="block">
+                <input
+                  type="radio"
+                  name="changedHabits"
+                  value="no"
+                  onChange={() => setChangedHabits('no')}
+                  className="mr-2"
+                />
+                No
+              </label>
+              {changedHabits === 'yes' && (
+                <>
+                  <label htmlFor="habitsDetails">Please specify:</label>
+                  <input
+                    id="habitsDetails"
+                    type="text"
+                    value={habitsDetails}
+                    onChange={(e) => setHabitsDetails(e.target.value)}
+                    className="w-full p-2 border rounded text-gray-800 mt-2"
+                  />
+                </>
+              )}
+            </div>
+            <div className="mb-4">
+              <p>7. Would you recommend CyberSafe Uni to others?</p>
+              <label className="block">
+                <input
+                  type="radio"
+                  name="recommend"
+                  value="yes"
+                  onChange={() => setRecommend('yes')}
+                  className="mr-2"
+                />
+                Yes
+              </label>
+              <label className="block">
+                <input
+                  type="radio"
+                  name="recommend"
+                  value="no"
+                  onChange={() => setRecommend('no')}
+                  className="mr-2"
+                />
+                No
+              </label>
+            </div>
+            <button type="submit" className="btn-cyan px-4 py-2 rounded mt-4" disabled={!isFormComplete}>Submit Survey</button>
+            {!isFormComplete && <p className="text-red-400 mt-2">Please answer all required questions.</p>}
+          </form>
+        </section>
+      );
+    }
+
+    function Home() {
+      const [currentTip, setCurrentTip] = useState(0);
+      const [currentStat] = useState(stats[Math.floor(Math.random() * stats.length)]);
+      const [showWelcome, setShowWelcome] = useState(true);
+
+      useEffect(() => {
+        try {
+          const storedTipIndex = localStorage.getItem("tipIndex");
+          const today = new Date().toDateString();
+          const lastVisit = localStorage.getItem("lastVisit");
+
+          if (lastVisit !== today) {
+            const newTipIndex = storedTipIndex ? (parseInt(storedTipIndex) + 1) % tips.length : 0;
+            setCurrentTip(newTipIndex);
+            localStorage.setItem("tipIndex", newTipIndex);
+            localStorage.setItem("lastVisit", today);
+          } else {
+            setCurrentTip(parseInt(storedTipIndex) || 0);
+          }
+        } catch (e) {
+          console.error("Local storage is not available.");
+          setCurrentTip(0);
+        }
+      }, []);
+
+      useEffect(() => {
+        try {
+          const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+          if (hasSeenWelcome) setShowWelcome(false);
+        } catch (e) {
+          console.error("Local storage is not available.");
+          setShowWelcome(true);
+        }
+      }, []);
+
+      const closeWelcome = () => {
+        setShowWelcome(false);
+        try {
+          localStorage.setItem("hasSeenWelcome", "true");
+        } catch (e) {
+          console.error("Cannot set local storage.");
+        }
+      };
+
+      return (
+        <section className="text-center animate-fade-in">
+          {showWelcome && <WelcomeModal onClose={closeWelcome} />}
+          <h1 className="text-4xl font-bold mb-8 mt-4">Welcome to CyberSafe Uni</h1>
+          <p className="mb-8 text-gray-300">Choose an option to get started:</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="card transform hover:scale-105 hover:bg-gray-700 transition">
+              <i className="fas fa-question-circle text-3xl mb-2 text-cyan-400"></i>
+              <h3 className="text-lg font-semibold">Take the Quiz</h3>
+              <p className="text-gray-300">Test your cybersecurity knowledge with our interactive quiz.</p>
+              <Link to="/quiz" className="btn-cyan px-4 py-2 rounded inline-block mt-2">Start Quiz</Link>
+            </div>
+            <div className="card transform hover:scale-105 hover:bg-gray-700 transition">
+              <i className="fas fa-book text-3xl mb-2 text-cyan-400"></i>
+              <h3 className="text-lg font-semibold">Explore Learning Modules</h3>
+              <p className="text-gray-300">Learn about password management, phishing, and more.</p>
+              <Link to="/learn" className="btn-cyan px-4 py-2 rounded inline-block mt-2">Learn More</Link>
+            </div>
+            <div className="card transform hover:scale-105 hover:bg-gray-700 transition">
+              <i className="fas fa-laptop-code text-3xl mb-2 text-cyan-400"></i>
+              <h3 className="text-lg font-semibold">Practice Scenarios</h3>
+              <p className="text-gray-300">Apply your knowledge with real-world cybersecurity scenarios.</p>
+              <Link to="/practice" className="btn-cyan px-4 py-2 rounded inline-block mt-2">Start Practicing</Link>
+            </div>
+          </div>
+          <div className="mt-8 space-y-6">
+            <TipCard tip={tips[currentTip]} />
+            <StatCard stat={currentStat} />
+            <div className="card text-center">
+              <h3 className="text-lg font-semibold">Upcoming Features</h3>
+              <p className="text-gray-300">Stay tuned for advanced modules, faculty training, and a mobile app!</p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Quiz() {
+      return <QuizComponent questions={quizData} title="Cybersecurity Quiz" />;
+    }
+
+    function Practice() {
+      return <QuizComponent questions={scenarios} title="Practice Scenarios" />;
+    }
+
+    function Learn() {
+      const [selectedTopic, setSelectedTopic] = useState(null);
+      const [completedTopics, setCompletedTopics] = useState(() => {
+        try {
+          return JSON.parse(localStorage.getItem("completedTopics")) || [];
+        } catch {
+          return [];
+        }
+      });
+
+      const markAsCompleted = (title) => {
+        if (!completedTopics.includes(title)) {
+          const updated = [...completedTopics, title];
+          setCompletedTopics(updated);
+          try {
+            localStorage.setItem("completedTopics", JSON.stringify(updated));
+          } catch (e) {
+            console.error("Cannot set local storage.");
+          }
+        }
+      };
+
+      const resetProgress = () => {
+        setCompletedTopics([]);
+        try {
+          localStorage.removeItem("completedTopics");
+        } catch (e) {
+          console.error("Cannot remove local storage item.");
+        }
+      };
+
+      return (
+        <section>
+          <h2 className="text-2xl font-bold mb-6">Learning Modules</h2>
+          <button onClick={resetProgress} className="btn-cyan px-4 py-2 rounded mb-4">Reset Progress</button>
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className={`w-full md:w-1/3 ${selectedTopic ? 'hidden md:block' : ''}`}>
+              <TopicList topics={topics} onSelect={setSelectedTopic} completedTopics={completedTopics} />
+            </div>
+            {selectedTopic && (
+              <div className="w-full md:w-2/3">
+                <TopicDetail topic={selectedTopic} onBack={() => setSelectedTopic(null)} markAsCompleted={markAsCompleted} />
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    function App() {
+      return (
+        <HashRouter>
+          <div className="min-h-screen flex flex-col">
+            <nav className="nav-bar flex justify-center" role="navigation">
+              <Link to="/" className="px-4" aria-label="Go to home page">Home</Link>
+              <Link to="/quiz" className="px-4" aria-label="Take the cybersecurity quiz">Quiz</Link>
+              <Link to="/practice" className="px-4" aria-label="Practice cybersecurity scenarios">Practice</Link>
+              <Link to="/learn" className="px-4" aria-label="Explore learning modules">Learn</Link>
+              <Link to="/survey" className="px-4" aria-label="Complete the evaluation survey">Survey</Link>
+            </nav>
+            <main className="max-w-5xl mx-auto p-6 flex-grow pt-16">
+              <Switch>
+                <Route path="/" exact component={Home} />
+                <Route path="/quiz" component={Quiz} />
+                <Route path="/practice" component={Practice} />
+                <Route path="/learn" component={Learn} />
+                <Route path="/survey" component={Survey} />
+              </Switch>
+            </main>
+            <footer className="text-center p-4 bg-gray-800 text-white">
+              <p>© 2025 CyberSafe Uni. Protecting digital futures.</p>
+            </footer>
+          </div>
+        </HashRouter>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
